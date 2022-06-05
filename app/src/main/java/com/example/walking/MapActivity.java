@@ -46,37 +46,21 @@ public class MapActivity extends AppCompatActivity {
     private String totalTime = null;
     private String totalFare = null;
 
-    public TMapPoint randomTMapPoint() {
-        double latitude = ((double) Math.random()) * (37.575113 - 37.483086) + 37.483086;
-        double longitude = ((double) Math.random()) * (127.027359 - 126.878357) + 126.878357;
+    //출발지 지정
+    public TMapPoint getPoint1() {
+        double latitude = 37.519241;
+        double longtitude = 127.067861;
 
-        latitude = Math.min(37.575113, latitude);
-        latitude = Math.max(37.483086, latitude);
-
-        longitude = Math.min(127.027359, longitude);
-        longitude = Math.max(126.878357, longitude);
-
-        //LogManager.printLog("randomTMapPoint" + latitude + " " + longitude);
-
-        TMapPoint point = new TMapPoint(latitude, longitude);
-
+        TMapPoint point = new TMapPoint(latitude, longtitude);
         return point;
     }
 
-    public TMapPoint randomTMapPoint2() {
-        double latitude = ((double) Math.random()) * (37.770555 - 37.404194) + 37.483086;
-        double longitude = ((double) Math.random()) * (127.426043 - 126.770296) + 126.878357;
+    //도착지 지정
+    public TMapPoint getPoint2() {
+        double latitude = 37.501843;
+        double longtitude = 127.081138;
 
-        latitude = Math.min(37.770555, latitude);
-        latitude = Math.max(37.404194, latitude);
-
-        longitude = Math.min(127.426043, longitude);
-        longitude = Math.max(126.770296, longitude);
-
-        //LogManager.printLog("randomTMapPoint" + latitude + " " + longitude);
-
-        TMapPoint point = new TMapPoint(latitude, longitude);
-
+        TMapPoint point = new TMapPoint(latitude, longtitude);
         return point;
     }
 
@@ -90,21 +74,13 @@ public class MapActivity extends AppCompatActivity {
         return null;
     }
 
-
     private void findPathDataAllType(final TMapData.TMapPathType type) {
         totalDistance = null;
         totalTime = null;
         totalFare = null;
 
-        //TMapPoint point1 = tMapView.getCenterPoint();
-        TMapPoint point1 = new TMapPoint(37.519241, 127.067861);
-        TMapPoint point2 = null;
-        if (type == TMapData.TMapPathType.PEDESTRIAN_PATH) {
-            point2 = new TMapPoint(37.501843, 127.081138);
-            //point2 = randomTMapPoint2();
-        } else {
-            point2 = randomTMapPoint();
-        }
+        TMapPoint point1 = getPoint1();
+        TMapPoint point2 = getPoint2();
         TMapData tmapdata = new TMapData();
 
         tmapdata.findPathDataAllType(type, point1, point2, new TMapData.FindPathDataAllListenerCallback() {
