@@ -34,7 +34,10 @@ dependencies {
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
     implementation files('libs\\com.skt.Tmap_1.73.jar')
     implementation files('libs/kkma-2.1.jar') // 형태 분석기
+    implementation files('libs/naver_map_crawling.py') // 크롤링
+    implementation 'net.sourceforge.jexcelapi:jxl:2.6.12'
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.3'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
+
 }

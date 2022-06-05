@@ -29,6 +29,8 @@
             tools:layout_editor_absoluteX="296dp"
             tools:layout_editor_absoluteY="174dp" />
 
+
+
     </LinearLayout>
 
 
@@ -41,5 +43,12 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <ListView
+        android:id="@+id/listView1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+    </ListView>
+
 
 </LinearLayout>

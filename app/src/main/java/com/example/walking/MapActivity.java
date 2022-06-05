@@ -2,9 +2,12 @@ package com.example.walking;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.widget.LinearLayout;
+import android.widget.Toast;
+
 import com.skt.Tmap.TMapData;
 import com.skt.Tmap.TMapInfo;
 import com.skt.Tmap.TMapPoint;
@@ -17,7 +20,10 @@ import org.w3c.dom.NodeList;
 public class MapActivity extends AppCompatActivity {
 
     String API_Key = "l7xx0b116cc83dfd454b8b29b8a1a309791d";
-
+    double slatitude;
+    double slongtitude;
+    double elatitude;
+    double elongtitude;
     TMapView tMapView = null;
 
     @Override
@@ -25,6 +31,19 @@ public class MapActivity extends AppCompatActivity {
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_map);
+
+        Intent intent = getIntent();
+        intent.getStringExtra("data");
+        String[] array = intent.getStringExtra("data").split(" ");
+
+        for(int i=0;i<array.length;i++) {
+            System.out.println(array[i]);
+        }
+
+        slatitude = Double.parseDouble(array[array.length-4]);
+        slongtitude = Double.parseDouble(array[array.length-3]);
+        elatitude = Double.parseDouble(array[array.length-2]);
+        elongtitude = Double.parseDouble(array[array.length-1]);
 
         LinearLayout linearLayoutTmap = (LinearLayout) findViewById(R.id.linearLayoutTmap);
 
@@ -40,43 +59,29 @@ public class MapActivity extends AppCompatActivity {
         tMapView.setLanguage(TMapView.LANGUAGE_KOREAN);
 
         findPathDataAllType(TMapData.TMapPathType.PEDESTRIAN_PATH);
+
+
     }
 
     private String totalDistance = null;
     private String totalTime = null;
     private String totalFare = null;
 
-    public TMapPoint randomTMapPoint() {
-        double latitude = ((double) Math.random()) * (37.575113 - 37.483086) + 37.483086;
-        double longitude = ((double) Math.random()) * (127.027359 - 126.878357) + 126.878357;
+    //출발지 지정
+    public TMapPoint getPoint1() {
+        double latitude = slatitude;
+        double longtitude = slongtitude;
 
-        latitude = Math.min(37.575113, latitude);
-        latitude = Math.max(37.483086, latitude);
-
-        longitude = Math.min(127.027359, longitude);
-        longitude = Math.max(126.878357, longitude);
-
-        //LogManager.printLog("randomTMapPoint" + latitude + " " + longitude);
-
-        TMapPoint point = new TMapPoint(latitude, longitude);
-
+        TMapPoint point = new TMapPoint(latitude, longtitude);
         return point;
     }
 
-    public TMapPoint randomTMapPoint2() {
-        double latitude = ((double) Math.random()) * (37.770555 - 37.404194) + 37.483086;
-        double longitude = ((double) Math.random()) * (127.426043 - 126.770296) + 126.878357;
+    //도착지 지정
+    public TMapPoint getPoint2() {
+        double latitude = elatitude;
+        double longtitude = elongtitude;
 
-        latitude = Math.min(37.770555, latitude);
-        latitude = Math.max(37.404194, latitude);
-
-        longitude = Math.min(127.426043, longitude);
-        longitude = Math.max(126.770296, longitude);
-
-        //LogManager.printLog("randomTMapPoint" + latitude + " " + longitude);
-
-        TMapPoint point = new TMapPoint(latitude, longitude);
-
+        TMapPoint point = new TMapPoint(latitude, longtitude);
         return point;
     }
 
@@ -90,21 +95,13 @@ public class MapActivity extends AppCompatActivity {
         return null;
     }
 
-
     private void findPathDataAllType(final TMapData.TMapPathType type) {
         totalDistance = null;
         totalTime = null;
         totalFare = null;
 
-        //TMapPoint point1 = tMapView.getCenterPoint();
-        TMapPoint point1 = new TMapPoint(37.519241, 127.067861);
-        TMapPoint point2 = null;
-        if (type == TMapData.TMapPathType.PEDESTRIAN_PATH) {
-            point2 = new TMapPoint(37.501843, 127.081138);
-            //point2 = randomTMapPoint2();
-        } else {
-            point2 = randomTMapPoint();
-        }
+        TMapPoint point1 = getPoint1();
+        TMapPoint point2 = getPoint2();
         TMapData tmapdata = new TMapData();
 
         tmapdata.findPathDataAllType(type, point1, point2, new TMapData.FindPathDataAllListenerCallback() {
