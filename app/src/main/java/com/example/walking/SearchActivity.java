@@ -34,6 +34,8 @@ import jxl.read.biff.BiffException;
 
 public class SearchActivity extends AppCompatActivity {
     List<String> data = new ArrayList();
+    private ArrayAdapter<String> adapter = null;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,7 +60,14 @@ public class SearchActivity extends AppCompatActivity {
         try {
             InputStream is = getBaseContext().getResources().getAssets().open("park_in_seoul_2.xls");
             Workbook wb = Workbook.getWorkbook(is);
-            TextView text = (TextView)findViewById(R.id.test);
+
+            ListView list = (ListView) findViewById(R.id.listView1);
+
+            if(adapter!=null){
+                adapter.clear();
+                list.setAdapter(adapter);
+            }
+
 
             if(wb != null) {
                 Sheet sheet = wb.getSheet(0);   // 시트 불러오기
@@ -83,7 +92,6 @@ public class SearchActivity extends AppCompatActivity {
                         System.out.println("test : " +  sb.toString() + "\n");
                         if(sb.length()>10)
                             data.add(sb.toString());
-                        text.setText(sb);
                     }
                 }
             }
@@ -95,7 +103,7 @@ public class SearchActivity extends AppCompatActivity {
 
         ListView list = (ListView) findViewById(R.id.listView1);
 
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
+        adapter = new ArrayAdapter<String>(this,
                 android.R.layout.simple_list_item_1, data);
         list.setAdapter(adapter);
 
@@ -104,18 +112,6 @@ public class SearchActivity extends AppCompatActivity {
             public void onItemClick(AdapterView<?> arg0, View arg1, int position, long id) {
                 Toast.makeText(getApplicationContext(),data.get(position), Toast.LENGTH_SHORT).show();
                 Intent intent = new Intent(getApplicationContext(), MapActivity.class);
-                /* putExtra의 첫 값은 식별 태그, 뒤에는 다음 화면에 넘길 값 */
-                /*System.out.println(data.get(position));
-                String[] array = data.get(position).split(" ");
-                /*for(int i=2;i<array.length;i++) {
-                    System.out.println(array[i]);
-                }*/
-
-                //array[array.length-4] = "123.2";
-                /*double slatitude = Double.parseDouble(array[array.length-4]);
-                double slongtitude = Double.parseDouble(array[array.length-3]);
-                double elatitude = Double.parseDouble(array[array.length-2]);
-                double elongtitude = Double.parseDouble(array[array.length-1]);*/
 
                 intent.putExtra("data", data.get(position));
                 startActivity(intent);
@@ -160,11 +156,13 @@ public class SearchActivity extends AppCompatActivity {
         KeywordExtractor ke = new KeywordExtractor();
         //KeywordList kl = ke.extractKeyword(string, true);
         KeywordList kl = ke.extractKeyword(edit.getText().toString(), true);
-        /*for( int i = 0; i < kl.size(); i++ ){
+        for( int i = 0; i < kl.size(); i++ ){
             Keyword kwrd = kl.get(i);
             System.out.println(kwrd.getString() + "\t" + kwrd.getCnt());
-            str += (kwrd.getString() + "\t" + kwrd.getCnt()) + "\n";
-        }*/
+            str += (kwrd.getString() + " " + kwrd.getCnt()) + "\t";
+        }
+
+        text.setText(str);
         Keyword kwrd = kl.get(0);
 
         xls(kwrd.getString()+"구");
