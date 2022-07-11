@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context=".MainActivity">>
+    tools:context=".MainActivity">
 
     <TextView
         android:id="@+id/imgupload_title"
@@ -22,12 +22,11 @@
 
     <ImageView
         android:id="@+id/imageView1"
-        android:layout_width="365dp"
-        android:layout_height="311dp"
-        android:layout_marginTop="192dp"
+        android:layout_width="247dp"
+        android:layout_height="248dp"
+        android:layout_marginTop="144dp"
         android:src="@drawable/ic_launcher_background"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.504"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         tools:srcCompat="@tools:sample/avatars" />
@@ -36,12 +35,21 @@
         android:id="@+id/imgupload_button"
         android:layout_width="182dp"
         android:layout_height="101dp"
-        android:layout_marginBottom="112dp"
+        android:layout_marginBottom="224dp"
         android:text="이미지 업로드를 위해 상단 박스를 누르세요"
         android:textSize="20dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.497"
         app:layout_constraintStart_toStartOf="parent" />
+
+    <ListView
+        android:id="@+id/listView1"
+        android:layout_width="414dp"
+        android:layout_height="197dp"
+        tools:layout_editor_absoluteX="1dp"
+        tools:layout_editor_absoluteY="533dp"
+        tools:ignore="MissingConstraints" />
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>
