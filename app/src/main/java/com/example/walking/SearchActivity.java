@@ -3,7 +3,11 @@ package com.example.walking;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
+import android.content.pm.Signature;
 import android.os.Bundle;
+import android.util.Base64;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
@@ -15,6 +19,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.walking.R;
+import com.kakao.sdk.user.UserApiClient;
 
 import org.snu.ids.kkma.index.Keyword;
 import org.snu.ids.kkma.index.KeywordExtractor;
@@ -25,6 +30,8 @@ import org.snu.ids.kkma.ma.Sentence;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -35,13 +42,25 @@ import jxl.read.biff.BiffException;
 public class SearchActivity extends AppCompatActivity {
     List<String> data = new ArrayList();
     private ArrayAdapter<String> adapter = null;
-
+    private String strNick, strEmail;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search);
 
+        Intent intent = getIntent();
+        strNick = intent.getStringExtra("name");
+        strEmail = intent.getStringExtra("email");
+
+        TextView nickName = findViewById(R.id.nickname);
+        TextView email = findViewById(R.id.email);
+
+        nickName.setText(strNick);
+        email.setText(strEmail);
+
+
+        maTest();
         Button button = (Button)findViewById(R.id.button);
         button.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -52,9 +71,46 @@ public class SearchActivity extends AppCompatActivity {
         });
        // extractTest();
 
+        Button logout = (Button) findViewById(R.id.logout);
+        logout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                UserApiClient.getInstance().logout(error -> {
+                    if (error != null) {
+                    }else{
+                        Intent intent = new Intent(SearchActivity.this, LoginActivity.class);
+                        startActivity(intent);
+                    }
+                    return null;
+                });
+            }
+        });
 
 
     }
+
+
+    private void getHashKey(){
+        PackageInfo packageInfo = null;
+        try {
+            packageInfo = getPackageManager().getPackageInfo(getPackageName(), PackageManager.GET_SIGNATURES);
+        } catch (PackageManager.NameNotFoundException e) {
+            e.printStackTrace();
+        }
+        if (packageInfo == null)
+            Log.e("KeyHash", "KeyHash:null");
+
+        for (Signature signature : packageInfo.signatures) {
+            try {
+                MessageDigest md = MessageDigest.getInstance("SHA");
+                md.update(signature.toByteArray());
+                Log.d("KeyHash", Base64.encodeToString(md.digest(), Base64.DEFAULT));
+            } catch (NoSuchAlgorithmException e) {
+                Log.e("KeyHash", "Unable to get MessageDigest. signature=" + signature, e);
+            }
+        }
+    }
+
 //xls 파일 읽어오기
     public void xls(String location){
         try {
@@ -124,12 +180,13 @@ public class SearchActivity extends AppCompatActivity {
     //모든 용언 분석
     public void maTest() {
         EditText edit = (EditText) findViewById(R.id.search);
+        String string = "광진구 예쁜길이 좋아요";
         String str="";
         TextView text = (TextView)findViewById(R.id.test);
         try {
             MorphemeAnalyzer ma = new MorphemeAnalyzer();
             ma.createLogger(null);
-            List<MExpression> ret = ma.analyze(edit.getText().toString());
+            List<MExpression> ret = ma.analyze(string);
             ret = ma.postProcess(ret);
             ret = ma.leaveJustBest(ret);
             List<Sentence> stl = ma.divideToSentences(ret);
@@ -145,27 +202,30 @@ public class SearchActivity extends AppCompatActivity {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        text.setText(str);
+
+        //text.setText(str);
     }
     //명사 분서
     public void extractTest(){
         EditText edit = (EditText) findViewById(R.id.search);
         //String string = "광진구 예쁜길이 좋아요";
         String str="";
-        TextView text = (TextView)findViewById(R.id.test);
-        KeywordExtractor ke = new KeywordExtractor();
-        //KeywordList kl = ke.extractKeyword(string, true);
-        KeywordList kl = ke.extractKeyword(edit.getText().toString(), true);
-        for( int i = 0; i < kl.size(); i++ ){
-            Keyword kwrd = kl.get(i);
-            System.out.println(kwrd.getString() + "\t" + kwrd.getCnt());
-            str += (kwrd.getString() + " " + kwrd.getCnt()) + "\t";
+        if(edit.toString() !=null) {
+            TextView text = (TextView) findViewById(R.id.test);
+            KeywordExtractor ke = new KeywordExtractor();
+            //KeywordList kl = ke.extractKeyword(string, true);
+            KeywordList kl = ke.extractKeyword(edit.getText().toString(), true);
+            for (int i = 0; i < kl.size(); i++) {
+                Keyword kwrd = kl.get(i);
+                System.out.println(kwrd.getString() + "\t" + kwrd.getCnt());
+                str += (kwrd.getString() + " " + kwrd.getCnt()) + "\t";
+            }
+
+            text.setText(str);
+            Keyword kwrd = kl.get(0);
+
+            xls(kwrd.getString() + "구");
         }
-
-        text.setText(str);
-        Keyword kwrd = kl.get(0);
-
-        xls(kwrd.getString()+"구");
     }
 
 }
