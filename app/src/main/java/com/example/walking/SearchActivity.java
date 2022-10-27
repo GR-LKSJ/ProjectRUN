@@ -58,7 +58,7 @@ public class SearchActivity extends AppCompatActivity {
 //xls 파일 읽어오기
     public void xls(String location){
         try {
-            InputStream is = getBaseContext().getResources().getAssets().open("park_in_seoul_2.xls");
+            InputStream is = getBaseContext().getResources().getAssets().open("park_in_seoul_3.xls");
             Workbook wb = Workbook.getWorkbook(is);
 
             ListView list = (ListView) findViewById(R.id.listView1);
