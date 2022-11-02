@@ -40,10 +40,10 @@ public class MapActivity extends AppCompatActivity {
             System.out.println(array[i]);
         }
 
-        slatitude = Double.parseDouble(array[array.length-4]);
-        slongtitude = Double.parseDouble(array[array.length-3]);
-        elatitude = Double.parseDouble(array[array.length-2]);
-        elongtitude = Double.parseDouble(array[array.length-1]);
+        slatitude = Double.parseDouble(array[2]);
+        slongtitude = Double.parseDouble(array[3]);
+        elatitude = Double.parseDouble(array[4]);
+        elongtitude = Double.parseDouble(array[5]);
 
         LinearLayout linearLayoutTmap = (LinearLayout) findViewById(R.id.linearLayoutTmap);
 

@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.Signature;
+import android.nfc.Tag;
 import android.os.Bundle;
 import android.util.Base64;
 import android.util.Log;
@@ -15,6 +16,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -41,14 +43,20 @@ import jxl.read.biff.BiffException;
 
 public class SearchActivity extends AppCompatActivity {
     List<String> data = new ArrayList();
+    List<String> dataBcakup = new ArrayList();
+    List<String> dataStart = new ArrayList();
     private ArrayAdapter<String> adapter = null;
     private String strNick, strEmail;
+    private Spinner spinner;
+    private String seoul = "강남구";
+    private StringBuilder themeData;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search);
 
+        // 카카오 로그인 이름 이메일 넣어오는 것 확인 코드 --------------------------------------------
         Intent intent = getIntent();
         strNick = intent.getStringExtra("name");
         strEmail = intent.getStringExtra("email");
@@ -58,8 +66,24 @@ public class SearchActivity extends AppCompatActivity {
 
         nickName.setText(strNick);
         email.setText(strEmail);
+        // 카카오 로그인 이름 이메일 넣어오는 것 확인 코드 -------------------------------------------
 
+        //현재 서울의 어디인지 알아오는 것
+        spinner = (Spinner)findViewById(R.id.seoul);
+        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long l) {
+                seoul =parent.getItemAtPosition(position).toString();
+            }
 
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+
+            }
+        });
+        //현재 서울의 어디인지 알아오는 것---------------------------
+
+        // 테마 분석 및 지도
         maTest();
         Button button = (Button)findViewById(R.id.button);
         button.setOnClickListener(new View.OnClickListener() {
@@ -71,6 +95,8 @@ public class SearchActivity extends AppCompatActivity {
         });
        // extractTest();
 
+
+        // 로그아웃
         Button logout = (Button) findViewById(R.id.logout);
         logout.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -90,6 +116,7 @@ public class SearchActivity extends AppCompatActivity {
     }
 
 
+    /*
     private void getHashKey(){
         PackageInfo packageInfo = null;
         try {
@@ -110,11 +137,15 @@ public class SearchActivity extends AppCompatActivity {
             }
         }
     }
+     */
 
 //xls 파일 읽어오기
-    public void xls(String location){
+    public void xls(ArrayList theme){
+        dataBcakup.clear();
+        data.clear();
+
         try {
-            InputStream is = getBaseContext().getResources().getAssets().open("park_in_seoul_2.xls");
+            InputStream is = getBaseContext().getResources().getAssets().open("map_with_theme.xls");
             Workbook wb = Workbook.getWorkbook(is);
 
             ListView list = (ListView) findViewById(R.id.listView1);
@@ -134,20 +165,43 @@ public class SearchActivity extends AppCompatActivity {
                     System.out.println("전체 row : " + rowTotal+"\n");
 
                     StringBuilder sb;
+                    String[] array;
                     for(int row=rowIndexStart;row<rowTotal;row++) {
-                        sb = new StringBuilder();
+                        themeData = new StringBuilder();
 
-                        System.out.println("지역 : " +  sheet.getCell(0, row).getContents().toString() +" : "+location+ "\n");
-                        if(location.equals(sheet.getCell(0, row).getContents())) {
+                        //System.out.println("지역 : " +  sheet.getCell(0, row).getContents().toString() +" : "+seoul+ "\n");
+                        if(seoul.equals(sheet.getCell(0, row).getContents())) {
                             for (int col = 0; col < colTotal; col++) {
                                 String contents = sheet.getCell(col, row).getContents();    // col row에 해당하는 것 하나씩 읽기
-                                sb.append( contents + " ");
+                                themeData.append( contents + " ");
 
                             }
                         }
-                        System.out.println("test : " +  sb.toString() + "\n");
-                        if(sb.length()>10)
-                            data.add(sb.toString());
+                        //System.out.println("test : " +  themeData.toString() + "\n");
+                        //Log.i(String.valueOf(this), "test : " +themeData.toString());
+                        String str="";
+                        if(themeData.length()>10) {
+                            array = themeData.toString().split(" ");
+                            Log.i(String.valueOf(this), "test3 : " +array[1]);
+                            for(int i =0;i<theme.size();i++){
+                                for(int j=0;j<array.length;j++) {
+                                    if(array[j].equals(theme.get(i))){
+                                        str = "산책로 : "+array[1] + "  테마 : ";
+                                        for(int p =6;p<10;p++){
+                                            if(!(array[p].equals("없음"))){
+                                                str += " " + array[p];
+                                            }
+                                        }
+                                        data.add(str);
+                                        dataBcakup.add(themeData.toString());
+                                        break;
+                                    }
+                                }
+                            }
+
+                            //data.add(themeData.toString());
+                            //dataBcakup.add(themeData.toString());
+                        }
                     }
                 }
             }
@@ -156,6 +210,11 @@ public class SearchActivity extends AppCompatActivity {
         } catch (BiffException e) {
             e.printStackTrace();
         }
+        Log.i(String.valueOf(this), "test2 : " +data);
+        Log.i(String.valueOf(this), "test2 : " +dataBcakup);
+
+
+
 
         ListView list = (ListView) findViewById(R.id.listView1);
 
@@ -166,10 +225,10 @@ public class SearchActivity extends AppCompatActivity {
         list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> arg0, View arg1, int position, long id) {
-                Toast.makeText(getApplicationContext(),data.get(position), Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(),dataBcakup.get(position), Toast.LENGTH_SHORT).show();
                 Intent intent = new Intent(getApplicationContext(), MapActivity.class);
 
-                intent.putExtra("data", data.get(position));
+                intent.putExtra("data", dataBcakup.get(position));
                 startActivity(intent);
 
             }
@@ -208,6 +267,7 @@ public class SearchActivity extends AppCompatActivity {
     //명사 분서
     public void extractTest(){
         EditText edit = (EditText) findViewById(R.id.search);
+        ArrayList<String> list = new ArrayList<>();
         //String string = "광진구 예쁜길이 좋아요";
         String str="";
         if(edit.toString() !=null) {
@@ -219,12 +279,14 @@ public class SearchActivity extends AppCompatActivity {
                 Keyword kwrd = kl.get(i);
                 System.out.println(kwrd.getString() + "\t" + kwrd.getCnt());
                 str += (kwrd.getString() + " " + kwrd.getCnt()) + "\t";
+                list.add(kwrd.getString());
             }
 
             text.setText(str);
-            Keyword kwrd = kl.get(0);
+            //Keyword kwrd = kl.get(0);
+            //int size = kl.size();
 
-            xls(kwrd.getString() + "구");
+            xls(list);
         }
     }
 
