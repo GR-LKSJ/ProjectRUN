@@ -57,6 +57,7 @@ public class SearchActivity extends AppCompatActivity {
         setContentView(R.layout.activity_search);
 
         // 카카오 로그인 이름 이메일 넣어오는 것 확인 코드 --------------------------------------------
+        /*
         Intent intent = getIntent();
         strNick = intent.getStringExtra("name");
         strEmail = intent.getStringExtra("email");
@@ -66,6 +67,7 @@ public class SearchActivity extends AppCompatActivity {
 
         nickName.setText(strNick);
         email.setText(strEmail);
+        */
         // 카카오 로그인 이름 이메일 넣어오는 것 확인 코드 -------------------------------------------
 
         //현재 서울의 어디인지 알아오는 것
@@ -203,6 +205,44 @@ public class SearchActivity extends AppCompatActivity {
                             //dataBcakup.add(themeData.toString());
                         }
                     }
+                    if(data.size()==0){
+                        for(int row=rowIndexStart;row<rowTotal;row++) {
+                            themeData = new StringBuilder();
+
+                            //System.out.println("지역 : " +  sheet.getCell(0, row).getContents().toString() +" : "+seoul+ "\n");
+                            if(seoul.equals(sheet.getCell(0, row).getContents())) {
+                                for (int col = 0; col < colTotal; col++) {
+                                    String contents = sheet.getCell(col, row).getContents();    // col row에 해당하는 것 하나씩 읽기
+                                    themeData.append( contents + " ");
+
+                                }
+                            }
+                            //System.out.println("test : " +  themeData.toString() + "\n");
+                            Log.i(String.valueOf(this), "test4 : " +themeData.toString());
+                            String str="";
+                            if(themeData.length()>10) {
+                                array = themeData.toString().split(" ");
+                                Log.i(String.valueOf(this), "test5 : " +array[1]);
+
+                                    for(int j=0;j<array.length;j++) {
+                                            str = "산책로 : "+array[1] + "  테마 : ";
+                                            for(int p =6;p<10;p++){
+                                                if(!(array[p].equals("없음"))){
+                                                    str += " " + array[p];
+                                                }
+                                            }
+                                            data.add(str);
+                                            dataBcakup.add(themeData.toString());
+                                            break;
+
+                                    }
+
+
+                                //data.add(themeData.toString());
+                                //dataBcakup.add(themeData.toString());
+                            }
+                        }
+                    }
                 }
             }
         } catch (IOException e) {
@@ -241,7 +281,7 @@ public class SearchActivity extends AppCompatActivity {
         EditText edit = (EditText) findViewById(R.id.search);
         String string = "광진구 예쁜길이 좋아요";
         String str="";
-        TextView text = (TextView)findViewById(R.id.test);
+        //TextView text = (TextView)findViewById(R.id.test);
         try {
             MorphemeAnalyzer ma = new MorphemeAnalyzer();
             ma.createLogger(null);
@@ -271,7 +311,7 @@ public class SearchActivity extends AppCompatActivity {
         //String string = "광진구 예쁜길이 좋아요";
         String str="";
         if(edit.toString() !=null) {
-            TextView text = (TextView) findViewById(R.id.test);
+            //TextView text = (TextView) findViewById(R.id.test);
             KeywordExtractor ke = new KeywordExtractor();
             //KeywordList kl = ke.extractKeyword(string, true);
             KeywordList kl = ke.extractKeyword(edit.getText().toString(), true);
@@ -282,7 +322,7 @@ public class SearchActivity extends AppCompatActivity {
                 list.add(kwrd.getString());
             }
 
-            text.setText(str);
+            //text.setText(str);
             //Keyword kwrd = kl.get(0);
             //int size = kl.size();
 
