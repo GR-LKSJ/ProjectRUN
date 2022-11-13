@@ -267,7 +267,6 @@ public class SearchActivity extends AppCompatActivity {
             public void onItemClick(AdapterView<?> arg0, View arg1, int position, long id) {
                 Toast.makeText(getApplicationContext(),dataBcakup.get(position), Toast.LENGTH_SHORT).show();
                 Intent intent = new Intent(getApplicationContext(), MapActivity.class);
-
                 intent.putExtra("data", dataBcakup.get(position));
                 startActivity(intent);
 
